@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HunyHuny Discount Offer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family:Inter,Arial;
+  margin:0;
+  background:#f3f4f6;
+}
+
+.container{
+  max-width:1050px;
+  margin:20px auto;
+  padding:14px;
+}
+
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.logo{height:44px}
+
+h2{margin:0}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.field label{
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:4px;
+  display:block;
+  color:#555;
+}
+
+.field input,.field select{
+  width:100%;
+  padding:8px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-size:13px;
+}
+
+button{
+  border:0;
+  padding:9px 12px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.btn-dark{background:#111827;color:#fff}
+.btn-secondary{background:#eef2ff;color:#1e40af}
+.btn-danger{background:#fee2e2;color:#991b1b}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:14px;
+}
+
+th,td{
+  border-bottom:1px solid #eee;
+  padding:8px;
+  font-size:13px;
+}
+
+th{background:#fafafa}
+
+.summary{
+  margin-top:14px;
+  border:1px dashed #ddd;
+  padding:12px;
+  border-radius:12px;
+  background:#fcfcff;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  padding:4px 0;
+}
+
+.final{
+  font-size:20px;
+  font-weight:900;
+  color:#fff;
+  background:#111827;
+  padding:10px 14px;
+  border-radius:12px;
+}
+
+#suggestions{
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:10px;
+  margin-top:4px;
+  display:none;
+  max-height:150px;
+  overflow:auto;
+}
+
+.suggItem{padding:7px;cursor:pointer}
+.suggItem:hover{background:#eee}
+
+.btns{
+  margin-top:12px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<div class="card">
+
+<div class="grid">
+  <div class="field">
+    <label>Sales Person</label>
+    <input id="salesPerson">
+  </div>
+
+  <div class="field">
+    <label>Customer</label>
+    <input id="customerName">
+  </div>
+
+  <div class="field">
+    <label>Mobile</label>
+    <input id="customerMobile">
+  </div>
+
+  <div class="field">
+    <label>Payment</label>
+    <select id="paymentMode">
+      <option value="UPI">UPI</option>
+      <option value="NET">Net Banking</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Search Model</label>
+    <input id="modelSearch">
+    <div id="suggestions"></div>
+  </div>
+</div>
+
+<br>
+
+<label><input type="checkbox" id="specialEnable"> Special Discount</label>
+<input id="specialName" placeholder="Offer name">
+<input id="specialAmt" type="number" placeholder="Amount" disabled>
+
+<br><br>
+
+<label><input type="checkbox" id="comboEnable"> Enable Combo 3%</label>
+
+  <div <strong>Sheet Link:</strong>  https://docs.google.com/spreadsheets/d/1yPaI-ifu-3sOOdMGIt4BZ8-X67W7YI0jykm41b1IxwU/edit?usp=sharing</div>
+
+  
+<!-- ============= SCREENSHOT AREA ============= -->
+<div id="offerArea">
+  
+<div id="upiQRSection" style="display:none; text-align:center; margin-top:12px;">
+  <img id="upiQRImage" src="upi.png" style="height:160px;">
+  <br><br>
+  <button id="copyQRBtn" class="btn-secondary">📲 Copy QR</button>
+</div>
+
+  
+  <div class="header">
+    <img src="logo.png" class="logo">
+    <div>
+      <h2>HunyHuny Overseas Pvt. Ltd.</h2>
+      <div style="font-size:12px;color:#666">Discount Offer</div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <div class="row"><span>Offer ID</span><b id="offerId">Not Created</b></div>
+    <div class="row"><span>Valid Till</span><b id="validTill">-</b></div>
+    <div class="row"><span>Sales Person</span><b id="sSales"></b></div>
+    <div class="row"><span>Customer Name</span><b id="sCustomer"></b></div>
+    <div class="row"><span>Mobile Number</span><b id="sMobile"></b></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Total</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="cartBody"></tbody>
+  </table>
+
+  <div class="summary">
+    <div class="row"><span>Order Value</span><b id="orderValue">₹0</b></div>
+    <div class="row"><span>Website Discount</span><b id="webDisc">₹0</b></div>
+    <div class="row"><span>UPI Discount</span><b id="upiDisc">₹0</b></div>
+
+   <div class="row" id="comboRow" style="display:none">
+  <span id="comboLabel">Combo Discount</span>
+  <b id="comboDisc">₹0</b>
+</div>
+
+
+    <div class="row" id="specialRow" style="display:none">
+      <span id="specialLabel">Special Discount</span>
+      <b id="specialDisc">₹0</b>
+    </div>
+
+    <div class="row"><span>Total Savings</span><b id="totalSavings">₹0</b></div>
+
+    <hr>
+
+    <div class="row">
+      <span>Final Payable</span>
+      <b class="final" id="finalPay">₹0</b>
+    </div>
+<div id="upiQRBox" style="display:none; text-align:center; margin-top:12px;">
+  <img src="upi.png" style="height:160px;">
+  <div style="font-size:12px;font-weight:700;margin-top:6px">
+    Scan & Pay via UPI
+  </div>
+</div>
+
+  </div>
+
+</div>
+<!-- ============= END SCREENSHOT AREA ============= -->
+
+<div class="btns">
+  <button id="copyScreenshot" class="btn-dark">📸 Copy Screenshot</button>
+  <button id="copySummary" class="btn-secondary">🧾 Copy Summary</button>
+  <button id="clearCart" class="btn-secondary">🧹 Clear Cart</button>
+  <button id="clearAll" class="btn-danger">🧨 Clear All</button>
+</div>
+
+</div>
+</div>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
